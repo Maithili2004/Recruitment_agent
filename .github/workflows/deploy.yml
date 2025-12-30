@@ -53,22 +53,20 @@ jobs:
           docker rm streamlit_container 2>/dev/null || true
           docker run -d --name streamlit-container -p 8501:8501 --restart always $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           if [ ! -f "/etc/nginx/sites-available/streamlit" ]; then
-            cat > /tmp/streamlit_nginx << EOF
-server {
-  listen 80;
-  server_name _;
-  location / {
-    proxy_pass http://localhost:8501;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade \$http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host \$host;
-    proxy_cache_bypass \$http_upgrade;
-    proxy_read_timeout 86400;
-  }
-}
-EOF
-            sudo cp /tmp/streamlit_nginx /etc/nginx/sites-available/streamlit
+            sudo bash -c 'cat > /etc/nginx/sites-available/streamlit << "NGINX_CONF"'
+            sudo bash -c 'echo "server {" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "  listen 80;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "  server_name _;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "  location / {" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "    proxy_pass http://localhost:8501;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "    proxy_http_version 1.1;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "    proxy_set_header Upgrade \$http_upgrade;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "    proxy_set_header Connection \"upgrade\";" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "    proxy_set_header Host \$host;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "    proxy_cache_bypass \$http_upgrade;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "    proxy_read_timeout 86400;" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "  }" >> /etc/nginx/sites-available/streamlit'
+            sudo bash -c 'echo "}" >> /etc/nginx/sites-available/streamlit'
             sudo ln -sf /etc/nginx/sites-available/streamlit /etc/nginx/sites-enabled/streamlit
             sudo rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
             sudo nginx -t
