@@ -112,6 +112,12 @@ The repository includes automated CI/CD pipeline that:
 - GitHub Secrets configured: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `ECR_REPOSITORY`
 - Self-hosted GitHub Actions runner
 
+
+**ECR Repository URL:**
+```
+158311565058.dkr.ecr.eu-north-1.amazonaws.com/streamlit-apps
+```
+
 ## 📊 Scoring System Details
 
 The deterministic scoring system evaluates skills based on:
