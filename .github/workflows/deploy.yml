@@ -49,8 +49,8 @@ jobs:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY_NAME }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker stop streamlit_container 2>/dev/null || true
-          docker rm streamlit_container 2>/dev/null || true
+          docker stop streamlit-container 2>/dev/null || true
+          docker rm streamlit-container 2>/dev/null || true
           docker run -d --name streamlit-container -p 8501:8501 --restart always $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           if [ ! -f "/etc/nginx/sites-available/streamlit" ]; then
             sudo bash -c 'cat > /etc/nginx/sites-available/streamlit << "NGINX_CONF"'
