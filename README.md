@@ -115,7 +115,7 @@ The repository includes automated CI/CD pipeline that:
 
 **ECR Repository URL:**
 ```
-158311565058.dkr.ecr.eu-north-1.amazonaws.com/streamlit-apps
+158311565058.dkr.ecr.ap-south-1.amazonaws.com/streamlit-apps
 ```
 
 ## 📊 Scoring System Details
