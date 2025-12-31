@@ -5,8 +5,8 @@ st.set_page_config(
     page_icon="",
     layout="wide"
 )
-import Recruitment_agent.ui as ui
-from Recruitment_agent.agents import ResumeAnalysisAgent
+import ui
+from agents import ResumeAnalysisAgent
 import atexit
 
 #Role requirements dictionary
