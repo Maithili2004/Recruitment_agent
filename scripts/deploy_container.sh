@@ -36,23 +36,50 @@ if command -v aws &> /dev/null; then
 if [ ! -f "/etc/nginx/sites-available/streamlit" ]; 
 then
   echo "Creating Nginx Configuration..."
-  cat > /tmp/streamlit_ngnix << 'EOL'
-server{
-  Listen 80;
-  server_name _;
-  location / {
-  proxy_pass http://localhost:8501;
-  proxy_http_version 1.1;
-  proxy_set_header Upgrade $http_upgrade;
-  proxy_set_header Connection "upgrade";
-  proxy_set_header Host $host;
-  proxy_cache_bypass $http_upgrade;
-  proxy_read_timeout 86400;
-  }
+  cat > /tmp/streamlit_nginx << 'EOL'
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://localhost:8501;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+        proxy_read_timeout 86400;
+        proxy_connect_timeout 86400;
+        proxy_send_timeout 86400;
+
+        # Fix for ERR_INCOMPLETE_CHUNKED_ENCODING
+        proxy_buffering off;
+        proxy_buffer_size 16k;
+        proxy_busy_buffers_size 24k;
+        proxy_buffers 64 4k;
+
+        # Required for Streamlit
+        proxy_set_header X-Forwarded-Host $host;
+        chunked_transfer_encoding on;
+    }
+
+    location /_stcore/stream {
+        proxy_pass http://localhost:8501/_stcore/stream;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_buffering off;
+        proxy_cache off;
+        proxy_read_timeout 86400;
+    }
 }
 EOL
 
-    sudo cp /tmp/streamlit_nginx /etc/nginx/sites-available/reamlit
+    sudo cp /tmp/streamlit_nginx /etc/nginx/sites-available/streamlit
     sudo ln -sf /etc/nginx/sites-available/streamlit /etc/nginx/sites-enabled/streamlit
     sudo rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
     sudo nginx -t
