@@ -6,6 +6,16 @@ jobs:
   build-and-deploy:
     runs-on: self-hosted
     steps:
+      - name: Clean up disk space
+        run: |
+          echo "Disk space before cleanup:"
+          df -h
+          docker system prune -af --volumes || true
+          docker builder prune -af || true
+          sudo rm -rf /home/ubuntu/actions-runner/_diag/*.log || true
+          echo "Disk space after cleanup:"
+          df -h
+
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -96,5 +106,6 @@ jobs:
           sudo ln -sf /etc/nginx/sites-available/streamlit /etc/nginx/sites-enabled/streamlit
           sudo rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
           sudo nginx -t
-          sudo systemctl reload nginx
+          sudo systemctl enable nginx
+          sudo systemctl restart nginx
           
