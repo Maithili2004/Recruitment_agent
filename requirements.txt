@@ -1,14 +1,11 @@
 
-
-
-
 streamlit==1.31.0
 langchain==0.1.14
 langchain-community==0.0.34
 groq==0.4.2
 pypdf2==3.0.1
-faiss-cpu==1.13.0
-pandas==2.2.3
+faiss-cpu==1.7.4
+pandas==2.1.4
 python-dotenv==1.0.0
 matplotlib==3.8.2
 numpy<2
